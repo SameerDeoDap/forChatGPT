@@ -1,0 +1,506 @@
+<title>DeoDap Shopify Annual Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: one 1240px column; summary (KPIs + findings) first, then Sales → Traffic → Ads → Customers → Products, each a titled band of chart panels. */
+:root{
+  --bg:#f6f7f8; --panel:#ffffff; --ink:#0f1419; --ink-2:#4a525c; --muted:#7c848e;
+  --line:#e2e5e9; --axis:#c3c8ce; --accent:#2a78d6; --accent-soft:#e6f0fb;
+  --good:#006300; --good-bg:#e5f3e5; --bad:#b42323; --bad-bg:#fbeaea; --warn:#8a5a00; --warn-bg:#fdf2dc;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300; --s7:#4a3aa7; --s8:#e34948;
+  --s1-soft:#b7d3f6;
+  --font:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e1114; --panel:#171b20; --ink:#f3f5f7; --ink-2:#c1c7ce; --muted:#8b939c;
+  --line:#262c33; --axis:#39414a; --accent:#3987e5; --accent-soft:#16283d;
+  --good:#3cc13c; --good-bg:#12291a; --bad:#f07a7a; --bad-bg:#341818; --warn:#f0b43c; --warn-bg:#33270f;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767;
+  --s1-soft:#184f95; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1114; --panel:#171b20; --ink:#f3f5f7; --ink-2:#c1c7ce; --muted:#8b939c;
+  --line:#262c33; --axis:#39414a; --accent:#3987e5; --accent-soft:#16283d;
+  --good:#3cc13c; --good-bg:#12291a; --bad:#f07a7a; --bad-bg:#341818; --warn:#f0b43c; --warn-bg:#33270f;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767;
+  --s1-soft:#184f95; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:14px;line-height:1.5}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:20px;padding-block:28px 64px;display:grid;gap:36px}
+h1,h2,h3{margin:0;text-wrap:balance}
+h1{font-size:28px;font-weight:700;letter-spacing:-.01em}
+h2{font-size:19px;font-weight:600}
+h3{font-size:14px;font-weight:600}
+p{margin:0}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.sub{color:var(--ink-2);max-width:72ch}
+.num{font-variant-numeric:tabular-nums}
+header{display:grid;gap:10px}
+.sources{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.chip{font-family:var(--mono);font-size:11.5px;padding:3px 8px;border:1px solid var(--line);border-radius:4px;color:var(--ink-2);background:var(--panel)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:grid;gap:4px;align-content:start}
+.kpi .label{font-size:12.5px;color:var(--ink-2)}
+.kpi .value{font-size:25px;font-weight:600;letter-spacing:-.01em}
+.kpi .note{font-size:12px;color:var(--muted)}
+.pill{display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:600;padding:1px 7px;border-radius:999px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pill.up{color:var(--good);background:var(--good-bg)}
+.pill.down{color:var(--bad);background:var(--bad-bg)}
+.pill.flat{color:var(--warn);background:var(--warn-bg)}
+.findings{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:20px 22px;display:grid;gap:14px}
+.findings ol{margin:0;padding-left:20px;display:grid;gap:10px;max-width:92ch}
+.findings li::marker{color:var(--muted);font-family:var(--mono);font-size:12px}
+.findings b{font-weight:600}
+section{display:grid;gap:14px}
+.sec-head{display:grid;gap:4px;border-top:1px solid var(--line);padding-top:18px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(12,1fr)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px;display:grid;gap:10px;min-width:0;grid-column:span 12;align-content:start}
+.span6{grid-column:span 6}.span4{grid-column:span 4}.span8{grid-column:span 8}
+@media (max-width:900px){.span6,.span4,.span8{grid-column:span 12}}
+.panel-head{display:flex;flex-wrap:wrap;gap:8px 16px;justify-content:space-between;align-items:baseline}
+.panel .cap{font-size:12.5px;color:var(--muted)}
+.chart{position:relative;height:280px}
+.chart.tall{height:340px}
+.chart.short{height:220px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;flex-wrap:wrap}
+.seg button{font:inherit;font-size:12.5px;padding:5px 10px;border:0;background:transparent;color:var(--ink-2);cursor:pointer}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--ink);font-weight:600}
+.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.legend i.line{height:2px;width:14px;border-radius:1px}
+.table-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:7px 10px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;font-variant-numeric:tabular-nums}
+th:first-child,td:first-child{text-align:left}
+th{font-weight:500;color:var(--muted);font-size:12px;position:sticky;top:0;background:var(--panel)}
+tbody tr:hover td{background:var(--accent-soft)}
+tfoot td{font-weight:600;border-top:1px solid var(--axis);border-bottom:0}
+td.best{font-weight:600}
+.bars{display:grid;gap:8px}
+.bar-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;font-size:13px}
+.bar-row .name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-row .val{font-variant-numeric:tabular-nums;color:var(--ink-2)}
+.bar-track{grid-column:1/-1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;background:var(--s1);border-radius:3px}
+.funnel{display:grid;gap:10px}
+.fstep{display:grid;grid-template-columns:150px minmax(0,1fr) 92px;gap:10px;align-items:center;font-size:13px}
+.fstep .track{height:22px;background:var(--line);border-radius:4px;overflow:hidden}
+.fstep .fill{height:100%;background:var(--s1);border-radius:4px}
+.fstep .v{text-align:right;font-variant-numeric:tabular-nums}
+.fstep small{display:block;color:var(--muted);font-size:11.5px}
+@media (max-width:520px){.fstep{grid-template-columns:100px minmax(0,1fr) 80px}}
+.note-box{border:1px dashed var(--axis);border-radius:8px;padding:14px 16px;color:var(--ink-2);font-size:13px;display:grid;gap:6px}
+.note-box ul{margin:0;padding-left:18px;display:grid;gap:4px}
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+.stat{display:grid;gap:2px}
+.stat .v{font-size:20px;font-weight:600}
+.stat .l{font-size:12px;color:var(--muted)}
+footer{color:var(--muted);font-size:12px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">deodap.in · Shopify Plus · INR · IST</div>
+    <h1>DeoDap Shopify performance, Oct 2025 to Sep 2026</h1>
+    <p class="sub">Twelve full months of Shopify sales compared month by month and against the same month a year earlier, read alongside store traffic, Meta and Google ad spend, Google Analytics channels, Search Console and GoKwik checkout data.</p>
+    <div class="sources">
+      <span class="chip">Shopify Analytics</span><span class="chip">Meta Ads · 8 accounts</span><span class="chip">Google Ads · Web + App</span><span class="chip">GA4 · deodap.in</span><span class="chip">Search Console</span><span class="chip">GoKwik checkout</span>
+    </div>
+  </header>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="findings">
+    <div class="eyebrow">What the year says</div>
+    <ol id="findings"></ol>
+  </div>
+
+  <!-- SALES -->
+  <section id="sales">
+    <div class="sec-head">
+      <div class="eyebrow">01 · Sales</div>
+      <h2>Monthly sales, this year against last year</h2>
+    </div>
+    <div class="grid">
+      <div class="panel">
+        <div class="panel-head">
+          <h3 id="salesTitle">Net sales by month</h3>
+          <div class="seg" role="group" aria-label="Sales metric">
+            <button type="button" id="m-net" aria-pressed="true" data-m="net">Net sales</button>
+            <button type="button" id="m-total" aria-pressed="false" data-m="total">Total sales</button>
+            <button type="button" id="m-orders" aria-pressed="false" data-m="orders">Orders</button>
+            <button type="button" id="m-aov" aria-pressed="false" data-m="aov">AOV</button>
+          </div>
+        </div>
+        <div class="legend" id="salesLegend"></div>
+        <div class="chart tall"><canvas id="salesChart" aria-label="Monthly sales chart"></canvas></div>
+      </div>
+      <div class="panel span6">
+        <div class="panel-head"><h3>Where gross sales go</h3><span class="cap">Discounts and returns as % of gross sales</span></div>
+        <div class="legend"><span><i class="line" style="background:var(--s2)"></i>Discounts</span><span><i class="line" style="background:var(--s8)"></i>Returns</span></div>
+        <div class="chart"><canvas id="leakChart"></canvas></div>
+      </div>
+      <div class="panel span6">
+        <div class="panel-head"><h3>Month-over-month change in net sales</h3><span class="cap">% vs previous month</span></div>
+        <div class="chart"><canvas id="momChart"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>Monthly comparison table</h3><span class="cap">₹ in lakh (L) · MoM and YoY on net sales</span></div>
+        <div class="table-wrap"><table id="salesTable"></table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRAFFIC -->
+  <section id="traffic">
+    <div class="sec-head">
+      <div class="eyebrow">02 · Traffic</div>
+      <h2>Store traffic and conversion</h2>
+      <p class="sub">Sessions from Shopify, channel mix from GA4, organic search from Search Console. Conversion here is Shopify orders ÷ Shopify sessions, because most orders complete in the GoKwik and Appbrew checkouts, which Shopify's own checkout funnel does not see.</p>
+    </div>
+    <div class="grid">
+      <div class="panel span6">
+        <div class="panel-head"><h3>Sessions and visitors</h3><span class="cap">Shopify online store</span></div>
+        <div class="legend"><span><i style="background:var(--s1)"></i>Sessions</span><span><i class="line" style="background:var(--s2)"></i>Unique visitors</span></div>
+        <div class="chart"><canvas id="sessChart"></canvas></div>
+      </div>
+      <div class="panel span6">
+        <div class="panel-head"><h3>Conversion and add-to-cart rate</h3><span class="cap">% of sessions</span></div>
+        <div class="legend"><span><i class="line" style="background:var(--s1)"></i>Orders ÷ sessions</span><span><i class="line" style="background:var(--s3)"></i>Sessions with add-to-cart</span></div>
+        <div class="chart"><canvas id="convChart"></canvas></div>
+      </div>
+      <div class="panel span8">
+        <div class="panel-head"><h3>GA4 sessions by channel</h3><span class="cap">Top 7 channel groups; the rest folded into Other</span></div>
+        <div class="legend" id="chanLegend"></div>
+        <div class="chart tall"><canvas id="chanChart"></canvas></div>
+      </div>
+      <div class="panel span4">
+        <div class="panel-head"><h3>Year funnel</h3><span class="cap">12-month totals</span></div>
+        <div class="funnel" id="funnel"></div>
+        <div class="panel-head" style="margin-top:8px"><h3>Sessions by device</h3></div>
+        <div class="bars" id="devices"></div>
+      </div>
+      <div class="panel span6">
+        <div class="panel-head"><h3>GA4 revenue by channel</h3><span class="cap">12-month GA4 purchase revenue, ₹ lakh</span></div>
+        <div class="bars" id="chanRev"></div>
+      </div>
+      <div class="panel span6">
+        <div class="panel-head"><h3>Google organic search</h3><span class="cap">Search Console clicks and average position</span></div>
+        <div class="legend"><span><i style="background:var(--s3)"></i>Clicks</span></div>
+        <div class="chart short"><canvas id="gscChart"></canvas></div>
+        <div class="stat-row" id="gscStats"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ADS -->
+  <section id="ads">
+    <div class="sec-head">
+      <div class="eyebrow">03 · Advertising</div>
+      <h2>Ad spend and what it returned</h2>
+      <p class="sub">Meta spend covers every connected ad account unless you switch to DeoDap accounts only. MER (marketing efficiency ratio) is Shopify net sales ÷ total ad spend; it does not depend on platform attribution.</p>
+    </div>
+    <div class="grid">
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Monthly ad spend by platform</h3>
+          <div class="seg" role="group" aria-label="Meta accounts included">
+            <button type="button" id="acc-all" aria-pressed="true" data-a="all">All Meta accounts</button>
+            <button type="button" id="acc-dd" aria-pressed="false" data-a="dd">DeoDap accounts only</button>
+          </div>
+        </div>
+        <div class="legend"><span><i style="background:var(--s1)"></i>Meta</span><span><i style="background:var(--s2)"></i>Google Web</span><span><i style="background:var(--s3)"></i>Google App</span></div>
+        <div class="chart"><canvas id="spendChart"></canvas></div>
+        <div class="stat-row" id="adStats"></div>
+      </div>
+      <div class="panel span6">
+        <div class="panel-head"><h3>MER by month</h3><span class="cap">Shopify net sales ÷ total ad spend</span></div>
+        <div class="chart"><canvas id="merChart"></canvas></div>
+      </div>
+      <div class="panel span6">
+        <div class="panel-head"><h3>Platform-reported ROAS</h3><span class="cap">Attributed purchase value ÷ spend</span></div>
+        <div class="legend"><span><i class="line" style="background:var(--s1)"></i>Meta · DeoDap account</span><span><i class="line" style="background:var(--s2)"></i>Google Web</span><span><i class="line" style="background:var(--s3)"></i>Google App</span></div>
+        <div class="chart"><canvas id="roasChart"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>Meta ad accounts, 12 months</h3><span class="cap">Spend, pixel purchases and attributed value</span></div>
+        <div class="table-wrap"><table id="metaTable"></table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CUSTOMERS -->
+  <section id="customers">
+    <div class="sec-head">
+      <div class="eyebrow">04 · Customers</div>
+      <h2>New and returning customers</h2>
+    </div>
+    <div class="grid">
+      <div class="panel span8">
+        <div class="legend"><span><i style="background:var(--s1)"></i>New customers</span><span><i style="background:var(--s7)"></i>Returning customers</span></div>
+        <div class="chart"><canvas id="custChart"></canvas></div>
+      </div>
+      <div class="panel span4">
+        <div class="panel-head"><h3>Ad cost per new customer</h3><span class="cap">Total ad spend ÷ new customers</span></div>
+        <div class="chart short"><canvas id="cacChart"></canvas></div>
+        <div class="stat-row" id="custStats"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCTS / GEO / CHANNELS -->
+  <section id="products">
+    <div class="sec-head">
+      <div class="eyebrow">05 · Products, regions and checkout</div>
+      <h2>What sold, where, and through which checkout</h2>
+    </div>
+    <div class="grid">
+      <div class="panel span6">
+        <div class="panel-head"><h3>Top 10 products by net sales</h3><span class="cap">₹ lakh · orders</span></div>
+        <div class="bars" id="prodBars"></div>
+        <p class="cap" id="prodNote"></p>
+      </div>
+      <div class="panel span6">
+        <div class="panel-head"><h3>Top 10 states by net sales</h3><span class="cap">₹ crore · AOV</span></div>
+        <div class="bars" id="regionBars"></div>
+      </div>
+      <div class="panel span6">
+        <div class="panel-head"><h3>Orders by sales channel</h3><span class="cap">Shopify sales channel, 12 months</span></div>
+        <div class="table-wrap"><table id="channelTable"></table></div>
+      </div>
+      <div class="panel span6">
+        <div class="panel-head"><h3>GoKwik checkout snapshot</h3><span class="cap">Sample held in the GoKwik warehouse, not the full year</span></div>
+        <div class="stat-row" id="gkStats"></div>
+        <p class="cap">In this sample 4 of every 5 GoKwik carts were abandoned, and those abandoned carts hold ₹3.39 Cr of value. Only 37% of payment attempts succeeded. Cart recovery and payment retry are the cheapest revenue on this page.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="note-box">
+    <b>How to read these numbers</b>
+    <ul>
+      <li>Shopify figures are in IST, for complete months from 1 Oct 2025 to 30 Sep 2026. Last year means Oct 2024 to Sep 2025.</li>
+      <li>Net sales = gross sales − discounts − returns. Total sales adds shipping and taxes.</li>
+      <li>Meta includes 8 connected accounts. Grabnix, Oblivion, Natation and Dabster may sell through other storefronts, so MER is shown both ways. "DeoDap accounts" means DeoDap and DeoDap (DIPL) A/c.</li>
+      <li>Platform ROAS relies on each platform's own attribution and double-counts across platforms. MER is the more reliable efficiency number.</li>
+      <li>Google App conversions count app events (installs and in-app actions), so they are far higher than orders.</li>
+      <li>₹86.3 Cr of net sales has no product title in Shopify (custom, bundled or deleted line items), so the product list covers named products only.</li>
+    </ul>
+  </div>
+  <footer>Data pulled 30 Sep 2026 from Shopify Analytics (ShopifyQL), Windsor.ai (Meta Ads, Google Ads, GA4, Search Console) and GoKwik.</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="data.js"></script>
+<script>
+(function(){
+const D = DATA, S = D.shopify, N = D.months.length;
+const sum = a => a.reduce((x,y)=>x+y,0);
+const MLAB = D.months.map(m=>{const [y,mo]=m.split('-');return new Date(+y,+mo-1,1).toLocaleString('en-IN',{month:'short'})+" '"+y.slice(2)});
+const MKEYS = ["Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep"];
+const cr = v => '₹'+(v/1e7).toFixed(2)+' Cr';
+const lakh = v => (v/1e5).toLocaleString('en-IN',{maximumFractionDigits:1,minimumFractionDigits:1});
+const inr = v => '₹'+Math.round(v).toLocaleString('en-IN');
+const cnt = v => Math.round(v).toLocaleString('en-IN');
+const cntShort = v => v>=1e7?(v/1e7).toFixed(2)+' Cr':v>=1e5?(v/1e5).toFixed(1)+' L':cnt(v);
+const pct = (v,d=1) => (v*100).toFixed(d)+'%';
+const pill = (v,inv) => { if(!isFinite(v)) return '<span class="pill flat">–</span>'; const cls = Math.abs(v)<0.02?'flat':((v>0)!==!!inv?'up':'down'); return `<span class="pill ${cls}">${v>0?'▲':v<0?'▼':''} ${Math.abs(v*100).toFixed(1)}%</span>`};
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+// ---------- derived series ----------
+const metaSpend = (filter) => MKEYS.map(k => sum(Object.entries(D.meta[k]).filter(([a])=>filter(a)).map(([,v])=>v[0])));
+const isDD = a => a==="DeoDap" || a==="DeoDap (DIPL) A/c";
+const metaAll = metaSpend(()=>true), metaDD = metaSpend(isDD);
+const gWeb = D.google.web.map(r=>r[0]), gApp = D.google.app.map(r=>r[0]);
+const adAll = metaAll.map((m,i)=>m+gWeb[i]+gApp[i]);
+const adDD = metaDD.map((m,i)=>m+gWeb[i]+gApp[i]);
+const conv = S.orders.map((o,i)=>o/S.sessions[i]);
+const cartRate = S.cartSessions.map((c,i)=>c/S.sessions[i]);
+const yoyNet = S.net.map((n,i)=>n/S.pyNet[i]-1);
+const momNet = S.net.map((n,i)=>i?n/S.net[i-1]-1:NaN);
+
+// ---------- KPIs ----------
+const netY=sum(S.net), netPY=sum(S.pyNet), ordY=sum(S.orders), ordPY=sum(S.pyOrders);
+const totY=sum(S.total), totPY=sum(S.pyTotal);
+const sessY=sum(S.sessions), adY=sum(adAll), adDDY=sum(adDD);
+const newC=sum(S.newCust), retC=sum(S.retCust);
+const kpis = [
+  ['Net sales', cr(netY), pill(netY/netPY-1)+' vs '+cr(netPY)+' last year'],
+  ['Total sales (incl. shipping & tax)', cr(totY), pill(totY/totPY-1)+' vs '+cr(totPY)],
+  ['Orders', cntShort(ordY), pill(ordY/ordPY-1)+' vs '+cntShort(ordPY)],
+  ['Avg order value', inr((sum(S.gross)-sum(S.discounts))/ordY), 'Net sales per order '+inr(netY/ordY)+' vs '+inr(netPY/ordPY)+' last year'],
+  ['Store sessions', cntShort(sessY), pct(ordY/sessY,2)+' orders per session'],
+  ['Total ad spend', cr(adY), pct(adY/netY)+' of net sales · Meta '+pct(sum(metaAll)/adY,0)],
+  ['MER', (netY/adY).toFixed(2)+'×', 'Net sales ÷ ad spend · '+(netY/adDDY).toFixed(2)+'× with DeoDap Meta only'],
+  ['Customers', cntShort(newC)+' new', cntShort(retC)+' returning · '+pct(retC/(newC+retC),0)+' of buyers']
+];
+document.getElementById('kpis').innerHTML = kpis.map(([l,v,n])=>`<div class="kpi"><div class="label">${l}</div><div class="value num">${v}</div><div class="note">${n}</div></div>`).join('');
+
+// ---------- findings ----------
+const best = S.net.indexOf(Math.max(...S.net)), worst = S.net.indexOf(Math.min(...S.net));
+const discQ1 = S.discounts[0]/S.gross[0], discLate = sum(S.discounts.slice(6))/sum(S.gross.slice(6));
+const retEarly = sum(S.returns.slice(0,3))/sum(S.gross.slice(0,3)), retLate = sum(S.returns.slice(9))/sum(S.gross.slice(9));
+const find = [
+  `<b>The year grew ${pct(netY/netPY-1)} in net sales (${cr(netY)} vs ${cr(netPY)}) on ${pct(ordY/ordPY-1)} more orders.</b> Order growth outpaced revenue growth because AOV fell from ₹535 in Oct '25 to ₹411–466 in the last quarter.`,
+  `<b>Growth was strongest from October to April, at +47% to +68% YoY every month.</b> May to July were almost flat against last year's strong summer (+7%, −6%, +3%). August came back at +61%, and September grew +18%.`,
+  `<b>${MLAB[best]} was the best month at ${cr(S.net[best])} net and ${cntShort(S.orders[best])} orders.</b> September then fell ${pct(-momNet[11],0)} month-over-month to ${cr(S.net[11])}. Watch this closely going into the festive quarter.`,
+  `<b>Returns are rising.</b> Returns went from ${pct(retEarly)} of gross sales in Oct–Dec to ${pct(retLate)} in Jul–Sep, reaching ₹44 L in August. Discounts moved the other way: ${pct(discQ1)} of gross in Oct '25, under 2% since July.`,
+  `<b>Ad spend was ${cr(adY)} for the year, ${pct(adY/netY)} of net sales, for a blended MER of ${(netY/adY).toFixed(2)}×.</b> The best months were Oct (6.7×) and Jun (5.7×). The weakest were Jan–Feb (4.2×), when Meta spend peaked at over ₹1.1 Cr a month. Google App spend grew almost 7× from ₹2.2 L to ₹15 L a month, and its platform ROAS fell from 16× to 5×.`,
+  `<b>Traffic peaked in August at 96.5 L sessions, but conversion peaked earlier, at 2.8% in June.</b> Conversion then slid to 1.7% by September, while add-to-cart rate dropped from 18% in April to 11%. More traffic is arriving but less of it is buying intent.`,
+  `<b>Organic search is weakening.</b> Search Console clicks fell from 7.8 L in June to 2.8 L in September, even though average position improved from 10.7 to 8.5. Impressions nearly doubled in Jun–Aug while CTR fell from 11% to 4%. Check titles and snippets, and any SERP feature changes.`,
+  `<b>Almost all orders (99.6%) complete through GoKwik checkouts.</b> The Appbrew mobile app alone drives ₹40.8 Cr (65%) of net sales. Returning customers rose from 42% to 46% of buyers, and the ad cost per new customer rose to ₹184 in September.`
+];
+document.getElementById('findings').innerHTML = find.map(f=>`<li>${f}</li>`).join('');
+
+// ---------- tables ----------
+(function salesTable(){
+  const hdr = ['Month','Orders','Gross ₹L','Discounts ₹L','Returns ₹L','Net ₹L','Total ₹L','AOV ₹','Net MoM','Net YoY','Last yr net ₹L'];
+  let rows = D.months.map((_,i)=>`<tr><td>${MLAB[i]}</td><td>${cnt(S.orders[i])}</td><td>${lakh(S.gross[i])}</td><td>${lakh(S.discounts[i])}</td><td>${lakh(S.returns[i])}</td><td class="${i===best?'best':''}">${lakh(S.net[i])}</td><td>${lakh(S.total[i])}</td><td>${Math.round(S.aov[i])}</td><td>${i?pill(momNet[i]):'<span class="pill flat">–</span>'}</td><td>${pill(yoyNet[i])}</td><td>${lakh(S.pyNet[i])}</td></tr>`).join('');
+  const foot = `<tr><td>12 months</td><td>${cnt(ordY)}</td><td>${lakh(sum(S.gross))}</td><td>${lakh(sum(S.discounts))}</td><td>${lakh(sum(S.returns))}</td><td>${lakh(netY)}</td><td>${lakh(totY)}</td><td>${Math.round((sum(S.gross)-sum(S.discounts))/ordY)}</td><td></td><td>${pill(netY/netPY-1)}</td><td>${lakh(netPY)}</td></tr>`;
+  document.getElementById('salesTable').innerHTML = `<thead><tr>${hdr.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows}</tbody><tfoot>${foot}</tfoot>`;
+})();
+(function metaTable(){
+  const acc = {};
+  MKEYS.forEach(k=>Object.entries(D.meta[k]).forEach(([a,v])=>{acc[a]=acc[a]||[0,0,0];acc[a][0]+=v[0];acc[a][1]+=v[1];acc[a][2]+=v[2]}));
+  const rows = Object.entries(acc).sort((a,b)=>b[1][0]-a[1][0]);
+  const tot = rows.reduce((t,[,v])=>[t[0]+v[0],t[1]+v[1],t[2]+v[2]],[0,0,0]);
+  document.getElementById('metaTable').innerHTML = `<thead><tr><th>Account</th><th>Spend ₹L</th><th>Share</th><th>Purchases</th><th>Attributed value ₹L</th><th>ROAS</th><th>Cost / purchase ₹</th></tr></thead><tbody>`+
+    rows.map(([a,v])=>`<tr><td>${a}${isDD(a)?' <span class="chip" style="padding:0 5px">DeoDap</span>':''}</td><td>${lakh(v[0])}</td><td>${pct(v[0]/tot[0])}</td><td>${v[2]?cnt(v[2]):'–'}</td><td>${v[1]?lakh(v[1]):'–'}</td><td>${v[1]?(v[1]/v[0]).toFixed(2)+'×':'not tracked'}</td><td>${v[2]?cnt(v[0]/v[2]):'–'}</td></tr>`).join('')+
+    `</tbody><tfoot><tr><td>All accounts</td><td>${lakh(tot[0])}</td><td>100%</td><td>${cnt(tot[2])}</td><td>${lakh(tot[1])}</td><td>${(tot[1]/tot[0]).toFixed(2)}×</td><td>${cnt(tot[0]/tot[2])}</td></tr></tfoot>`;
+})();
+(function channelTable(){
+  const t = S.channels, to = sum(t.map(r=>r[1])), tn = sum(t.map(r=>r[2]));
+  document.getElementById('channelTable').innerHTML = `<thead><tr><th>Channel</th><th>Orders</th><th>Share</th><th>Net ₹ Cr</th><th>AOV ₹</th></tr></thead><tbody>`+
+    t.map(r=>`<tr><td>${r[0]}</td><td>${cnt(r[1])}</td><td>${pct(r[1]/to)}</td><td>${(r[2]/1e7).toFixed(2)}</td><td>${r[1]?Math.round(r[2]/r[1]):'–'}</td></tr>`).join('')+`</tbody>`;
+})();
+
+// ---------- bar lists ----------
+function bars(el, rows, color){
+  const max = Math.max(...rows.map(r=>r[1]));
+  document.getElementById(el).innerHTML = rows.map(r=>`<div class="bar-row"><span class="name" title="${r[0]}">${r[0]}</span><span class="val">${r[2]}</span><div class="bar-track"><div class="bar-fill" style="width:${(r[1]/max*100).toFixed(1)}%;background:${color||'var(--s1)'}"></div></div></div>`).join('');
+}
+bars('prodBars', S.products.map(p=>[p[0],p[1],`₹${lakh(p[1])} L · ${cnt(p[2])} orders`]));
+document.getElementById('prodNote').textContent = `The top 10 named products add up to ₹${lakh(sum(S.products.map(p=>p[1])))} L, about ${pct(sum(S.products.map(p=>p[1]))/netY)} of net sales. The catalogue is very long-tail.`;
+bars('regionBars', S.regions.map(r=>[r[0],r[2],`₹${(r[2]/1e7).toFixed(2)} Cr · AOV ₹${Math.round(r[2]/r[1])}`]));
+const devT = sum(S.devices.map(d=>d[1]));
+bars('devices', S.devices.map(d=>[d[0],d[1],pct(d[1]/devT)]));
+const chanRevRows = Object.entries(D.ga4Rev).map(([k,v])=>[k,sum(v)]).sort((a,b)=>b[1]-a[1]);
+bars('chanRev', chanRevRows.map(r=>[r[0],r[1],'₹'+lakh(r[1])+' L']));
+
+// funnel
+const fs = [['Sessions',sessY],['Added to cart',sum(S.cartSessions)],['Orders',ordY]];
+document.getElementById('funnel').innerHTML = fs.map((f,i)=>`<div class="fstep"><span>${f[0]}${i?`<small>${pct(f[1]/fs[i-1][1])} of previous step</small>`:''}</span><div class="track"><div class="fill" style="width:${Math.max(f[1]/fs[0][1]*100,1.2).toFixed(1)}%"></div></div><span class="v">${cntShort(f[1])}</span></div>`).join('');
+
+// stats
+const stat = (el, arr) => document.getElementById(el).innerHTML = arr.map(([v,l])=>`<div class="stat"><span class="v num">${v}</span><span class="l">${l}</span></div>`).join('');
+stat('gscStats',[[cntShort(sum(D.gsc.clicks)),'Organic clicks, 12 mo'],[cntShort(sum(D.gsc.impressions)),'Impressions'],[D.gsc.position[11].toFixed(1),'Avg position, Sep (from '+D.gsc.position[0].toFixed(1)+')']]);
+stat('custStats',[[inr(adY/newC),'Avg ad cost per new customer'],[pct(S.retCust[11]/(S.retCust[11]+S.newCust[11]),0),'Returning share, Sep'],[pct(S.retCust[0]/(S.retCust[0]+S.newCust[0]),0),'Returning share, Oct \'25']]);
+stat('gkStats',[[pct(D.gokwik.abandonRate/100,0),'Cart abandonment'],[cnt(D.gokwik.abandoned),'Abandoned carts'],[cr(D.gokwik.abandonedValue),'Abandoned cart value'],[pct(D.gokwik.paySuccess/100,0),'Payment success rate']]);
+function adStats(dd){
+  const ad = dd?adDD:adAll, meta = dd?metaDD:metaAll;
+  stat('adStats',[[cr(sum(ad)),'Total ad spend'],[cr(sum(meta)),'Meta spend'],[cr(sum(gWeb)+sum(gApp)),'Google spend'],[(netY/sum(ad)).toFixed(2)+'×','MER, 12 months'],[pct(sum(ad)/netY),'Ad spend % of net sales']]);
+}
+
+// ---------- charts ----------
+let charts = [], salesMetric = 'net', accMode = 'all';
+function theme(){
+  return {ink:css('--ink'),ink2:css('--ink-2'),muted:css('--muted'),line:css('--line'),axis:css('--axis'),panel:css('--panel'),
+    s:[1,2,3,4,5,6,7,8].map(i=>css('--s'+i)), s1soft:css('--s1-soft'), good:css('--good'), bad:css('--bad')};
+}
+function base(T, yfmt, extra){
+  return Object.assign({
+    responsive:true, maintainAspectRatio:false, animation:false,
+    interaction:{mode:'index',intersect:false},
+    plugins:{legend:{display:false},tooltip:{backgroundColor:T.panel,titleColor:T.ink,bodyColor:T.ink2,borderColor:T.axis,borderWidth:1,padding:10,boxPadding:4,usePointStyle:true,
+      callbacks:{label:c=>' '+c.dataset.label+': '+(c.dataset.fmt||yfmt)(c.parsed.y)}}},
+    scales:{
+      x:{grid:{display:false},border:{color:T.axis},ticks:{color:T.muted,font:{family:'IBM Plex Mono',size:11}}},
+      y:{grid:{color:T.line},border:{display:false},ticks:{color:T.muted,font:{family:'IBM Plex Mono',size:11},callback:v=>yfmt(v,true)},beginAtZero:true}
+    }
+  }, extra||{});
+}
+const fmtCr = (v,ax)=> ax? '₹'+(v/1e7).toFixed(v%1e7?1:0)+' Cr' : cr(v);
+const fmtL = (v,ax)=> ax? '₹'+Math.round(v/1e5)+' L' : '₹'+lakh(v)+' L';
+const fmtCnt = (v,ax)=> ax? cntShort(v) : cnt(v);
+const fmtPct = (v,ax)=> (v*100).toFixed(ax?0:2)+'%';
+const fmtPct1 = (v,ax)=> (v*100).toFixed(ax?1:2)+'%';
+const fmtX = (v,ax)=> v.toFixed(ax?0:2)+'×';
+const fmtInr = (v)=> inr(v);
+const barDs = (label,data,color,extra)=>Object.assign({type:'bar',label,data,backgroundColor:color,borderRadius:{topLeft:4,topRight:4},borderSkipped:'bottom',maxBarThickness:28,categoryPercentage:.72,barPercentage:.9},extra||{});
+const lineDs = (label,data,color,extra)=>Object.assign({type:'line',label,data,borderColor:color,backgroundColor:color,borderWidth:2,pointRadius:3,pointHoverRadius:5,pointBackgroundColor:color,tension:.25},extra||{});
+
+function salesSeries(m){
+  if(m==='net') return {cur:S.net,prev:S.pyNet,fmt:fmtCr,title:'Net sales by month'};
+  if(m==='total') return {cur:S.total,prev:S.pyTotal,fmt:fmtCr,title:'Total sales by month (incl. shipping & tax)'};
+  if(m==='orders') return {cur:S.orders,prev:S.pyOrders,fmt:fmtCnt,title:'Orders by month'};
+  return {cur:S.net.map((n,i)=>n/S.orders[i]),prev:S.pyNet.map((n,i)=>n/S.pyOrders[i]),fmt:fmtInr,title:'Net sales per order by month'};
+}
+function build(){
+  charts.forEach(c=>c.destroy()); charts=[];
+  const T = theme(), mk=(id,cfg)=>charts.push(new Chart(document.getElementById(id),cfg));
+  // sales
+  const ss = salesSeries(salesMetric);
+  document.getElementById('salesTitle').textContent = ss.title;
+  document.getElementById('salesLegend').innerHTML = `<span><i style="background:${T.s[0]}"></i>Oct '25 – Sep '26</span><span><i style="background:${T.s1soft}"></i>${ss.prevLabel||"Same month last year"}</span>`;
+  mk('salesChart',{data:{labels:MLAB,datasets:[barDs(ss.prevLabel||'Last year',ss.prev,T.s1soft,{fmt:ss.fmt}),barDs('This year',ss.cur,T.s[0],{fmt:ss.fmt})]},
+    options:base(T,ss.fmt,{plugins:{legend:{display:false},tooltip:{backgroundColor:T.panel,titleColor:T.ink,bodyColor:T.ink2,borderColor:T.axis,borderWidth:1,padding:10,
+      callbacks:{label:c=>' '+c.dataset.label+': '+ss.fmt(c.parsed.y),footer:items=>{const i=items[0].dataIndex;const g=ss.cur[i]/ss.prev[i]-1;return 'YoY: '+(g>0?'+':'')+(g*100).toFixed(1)+'%'}},footerColor:T.ink}}})});
+  // leak
+  mk('leakChart',{data:{labels:MLAB,datasets:[lineDs('Discounts',S.discounts.map((d,i)=>d/S.gross[i]),T.s[1]),lineDs('Returns',S.returns.map((d,i)=>d/S.gross[i]),T.s[7])]},options:base(T,fmtPct1)});
+  // mom
+  mk('momChart',{data:{labels:MLAB,datasets:[barDs('MoM',momNet.map(v=>isFinite(v)?v:null),momNet.map(v=>v>=0?T.s[0]:T.s[7]),{borderRadius:4,borderSkipped:false})]},options:base(T,fmtPct1,{})});
+  charts[charts.length-1].options.scales.y.beginAtZero=true;
+  // sessions
+  mk('sessChart',{data:{labels:MLAB,datasets:[barDs('Sessions',S.sessions,T.s[0]),lineDs('Unique visitors',S.visitors,T.s[1])]},options:base(T,fmtCnt)});
+  // conversion
+  mk('convChart',{data:{labels:MLAB,datasets:[lineDs('Orders ÷ sessions',conv,T.s[0]),lineDs('Add-to-cart rate',cartRate,T.s[2])]},options:base(T,fmtPct)});
+  // channels stacked
+  const chKeys = ["Paid Social","Paid Shopping","Organic Search","Direct","Cross-network","Paid Other","Organic Social","Unassigned"];
+  const chLabel = k=> k==='Unassigned'?'Other / unassigned':k;
+  document.getElementById('chanLegend').innerHTML = chKeys.map((k,i)=>`<span><i style="background:${T.s[i]}"></i>${chLabel(k)}</span>`).join('');
+  mk('chanChart',{type:'bar',data:{labels:MLAB,datasets:chKeys.map((k,i)=>({label:chLabel(k),data:D.ga4[k],backgroundColor:T.s[i],borderColor:T.panel,borderWidth:{top:2},borderSkipped:'bottom',maxBarThickness:36,stack:'s'}))},
+    options:base(T,fmtCnt,{scales:{x:{stacked:true,grid:{display:false},border:{color:T.axis},ticks:{color:T.muted,font:{family:'IBM Plex Mono',size:11}}},y:{stacked:true,grid:{color:T.line},border:{display:false},ticks:{color:T.muted,font:{family:'IBM Plex Mono',size:11},callback:v=>cntShort(v)}}}})});
+  // gsc
+  mk('gscChart',{data:{labels:MLAB,datasets:[barDs('Clicks',D.gsc.clicks,T.s[2]),]},options:base(T,fmtCnt)});
+  // spend
+  const meta = accMode==='dd'?metaDD:metaAll;
+  mk('spendChart',{type:'bar',data:{labels:MLAB,datasets:[
+      {label:'Meta',data:meta,backgroundColor:T.s[0],stack:'a',borderColor:T.panel,borderWidth:{top:2},borderSkipped:'bottom',maxBarThickness:36},
+      {label:'Google Web',data:gWeb,backgroundColor:T.s[1],stack:'a',borderColor:T.panel,borderWidth:{top:2},borderSkipped:'bottom',maxBarThickness:36},
+      {label:'Google App',data:gApp,backgroundColor:T.s[2],stack:'a',borderColor:T.panel,borderWidth:{top:2},borderSkipped:'bottom',maxBarThickness:36,borderRadius:{topLeft:4,topRight:4}}]},
+    options:base(T,fmtL,{scales:{x:{stacked:true,grid:{display:false},border:{color:T.axis},ticks:{color:T.muted,font:{family:'IBM Plex Mono',size:11}}},y:{stacked:true,grid:{color:T.line},border:{display:false},ticks:{color:T.muted,font:{family:'IBM Plex Mono',size:11},callback:v=>fmtL(v,true)}}}})});
+  adStats(accMode==='dd');
+  // MER
+  const ad = accMode==='dd'?adDD:adAll;
+  mk('merChart',{data:{labels:MLAB,datasets:[lineDs('MER'+(accMode==='dd'?' (DeoDap Meta only)':' (all Meta accounts)'),S.net.map((n,i)=>n/ad[i]),T.s[0],{fill:{target:'origin'},backgroundColor:T.s[0]+'22',pointBackgroundColor:T.s[0]})]},options:base(T,fmtX)});
+  // ROAS
+  const ddRoas = MKEYS.map(k=>{const v=D.meta[k]["DeoDap"];return v[1]/v[0]});
+  mk('roasChart',{data:{labels:MLAB,datasets:[lineDs('Meta · DeoDap',ddRoas,T.s[0]),lineDs('Google Web',D.google.web.map(r=>r[1]/r[0]),T.s[1]),lineDs('Google App',D.google.app.map(r=>r[1]/r[0]),T.s[2])]},options:base(T,fmtX)});
+  // customers
+  mk('custChart',{type:'bar',data:{labels:MLAB,datasets:[
+      {label:'New customers',data:S.newCust,backgroundColor:T.s[0],stack:'c',borderColor:T.panel,borderWidth:{top:2},borderSkipped:'bottom',maxBarThickness:36},
+      {label:'Returning customers',data:S.retCust,backgroundColor:T.s[6],stack:'c',borderColor:T.panel,borderWidth:{top:2},borderSkipped:'bottom',maxBarThickness:36,borderRadius:{topLeft:4,topRight:4}}]},
+    options:base(T,fmtCnt,{scales:{x:{stacked:true,grid:{display:false},border:{color:T.axis},ticks:{color:T.muted,font:{family:'IBM Plex Mono',size:11}}},y:{stacked:true,grid:{color:T.line},border:{display:false},ticks:{color:T.muted,font:{family:'IBM Plex Mono',size:11},callback:v=>cntShort(v)}}}})});
+  mk('cacChart',{data:{labels:MLAB,datasets:[lineDs('Ad cost per new customer',adAll.map((a,i)=>a/S.newCust[i]),T.s[6])]},options:base(T,v=>'₹'+Math.round(v),{})});
+  charts[charts.length-1].options.scales.y.beginAtZero=false; charts[charts.length-1].update();
+}
+function seg(sel, attr, set){
+  document.querySelectorAll(sel).forEach(b=>b.addEventListener('click',()=>{
+    b.parentElement.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));
+    set(b.dataset[attr]); build();
+  }));
+}
+seg('[data-m]','m',v=>salesMetric=v);
+seg('[data-a]','a',v=>accMode=v);
+function start(){ if(window.Chart){ Chart.defaults.font.family="'IBM Plex Sans', system-ui, sans-serif"; build(); } }
+start();
+if(document.fonts) document.fonts.ready.then(()=>{ if(window.Chart) build(); });
+try{ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',build); }catch(e){}
+new MutationObserver(build).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+})();
+</script>
