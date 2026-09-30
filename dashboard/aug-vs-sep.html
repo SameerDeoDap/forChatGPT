@@ -1,0 +1,359 @@
+<title>August vs September Huddle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: festive meeting deck in one scrolling column. Hero scoreboard, big compare table, numbered meeting points, fact strip, campaign winners/losers, bulb ideas, questions. */
+:root{
+  --bg:#fbf8ff; --paper:#ffffff; --ink:#1d1533; --ink-2:#4d4466; --muted:#7d7494; --line:#e9e2f5;
+  --indigo:#3b2a8f; --marigold:#f59e0b; --pink:#db2777; --teal:#0d9488; --sky:#2563eb; --lime:#65a30d;
+  --indigo-bg:#ece8fb; --marigold-bg:#fff4dc; --pink-bg:#fde7f1; --teal-bg:#dcf5f1; --sky-bg:#e3ecfd;
+  --up:#08743a; --up-bg:#dcf5e6; --down:#b91c1c; --down-bg:#fde4e4; --flat:#8a5a00; --flat-bg:#fff1d0;
+  --hero-ink:#ffffff; --hero-bg:linear-gradient(120deg,#3b2a8f 0%,#6d28d9 45%,#db2777 100%);
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#120d20; --paper:#1c1530; --ink:#f4f0ff; --ink-2:#cfc6e6; --muted:#9a90b5; --line:#2e2548;
+  --indigo:#a99bff; --marigold:#fbbf24; --pink:#f472b6; --teal:#2dd4bf; --sky:#60a5fa; --lime:#a3e635;
+  --indigo-bg:#262050; --marigold-bg:#35270a; --pink-bg:#3d1430; --teal-bg:#0f302c; --sky-bg:#172a4d;
+  --up:#4ade80; --up-bg:#123322; --down:#f87171; --down-bg:#3a1515; --flat:#fbbf24; --flat-bg:#33270c;
+  --hero-bg:linear-gradient(120deg,#2a1e6b 0%,#4c1d95 45%,#9d174d 100%); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#120d20; --paper:#1c1530; --ink:#f4f0ff; --ink-2:#cfc6e6; --muted:#9a90b5; --line:#2e2548;
+  --indigo:#a99bff; --marigold:#fbbf24; --pink:#f472b6; --teal:#2dd4bf; --sky:#60a5fa; --lime:#a3e635;
+  --indigo-bg:#262050; --marigold-bg:#35270a; --pink-bg:#3d1430; --teal-bg:#0f302c; --sky-bg:#172a4d;
+  --up:#4ade80; --up-bg:#123322; --down:#f87171; --down-bg:#3a1515; --flat:#fbbf24; --flat-bg:#33270c;
+  --hero-bg:linear-gradient(120deg,#2a1e6b 0%,#4c1d95 45%,#9d174d 100%); color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:18px;padding-block:22px 64px;display:grid;gap:40px}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;letter-spacing:-.015em}
+h2{font-size:clamp(22px,3vw,30px);font-weight:800}
+h3{font-size:17px;font-weight:700}
+p{margin:0}
+.num{font-variant-numeric:tabular-nums}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--pink);font-weight:500}
+.lede{color:var(--ink-2);max-width:68ch}
+
+/* hero */
+.hero{background:var(--hero-bg);color:var(--hero-ink);border-radius:20px;padding:28px clamp(18px,4vw,40px);display:grid;gap:18px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-60px;top:-60px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(251,191,36,.55),rgba(251,191,36,0) 70%);pointer-events:none}
+.hero .kicker{color:#fde68a}
+.hero h1{font-size:clamp(30px,5.4vw,56px);font-weight:800;line-height:1.02}
+.hero h1 em{font-style:normal;color:#fde68a}
+.hero p{color:#efe9ff;max-width:64ch;font-size:16px}
+.score{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;position:relative;z-index:1}
+.score div{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:14px;padding:12px 14px;display:grid;gap:2px}
+.score b{font-family:var(--display);font-size:24px;font-weight:800}
+.score span{font-size:12.5px;color:#efe9ff}
+.score small{font-family:var(--mono);font-size:12px;color:#fde68a}
+
+/* compare table */
+.table-card{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:6px 0 0;overflow:hidden}
+.table-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:9px 14px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+th:first-child,td:first-child{text-align:left;white-space:normal;min-width:190px}
+thead th{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
+tr.group td{font-family:var(--display);font-weight:700;font-size:15px;text-align:left;padding-top:16px;border-bottom:0}
+tr.group td span{display:inline-block;padding:2px 10px;border-radius:999px}
+.g-shop span{background:var(--indigo-bg);color:var(--indigo)}
+.g-traffic span{background:var(--teal-bg);color:var(--teal)}
+.g-meta span{background:var(--sky-bg);color:var(--sky)}
+.g-google span{background:var(--marigold-bg);color:var(--flat)}
+.g-ga span{background:var(--pink-bg);color:var(--pink)}
+td .src{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:6px}
+.chg{display:inline-block;min-width:74px;text-align:center;font-weight:700;font-size:13px;padding:2px 8px;border-radius:999px}
+.chg.up{color:var(--up);background:var(--up-bg)} .chg.down{color:var(--down);background:var(--down-bg)} .chg.flat{color:var(--flat);background:var(--flat-bg)}
+td.verdict{text-align:left;color:var(--ink-2);font-size:13px;white-space:normal;min-width:220px}
+
+/* meeting points */
+.points{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.pt{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:18px;display:grid;gap:8px;align-content:start;border-top:5px solid var(--c)}
+.pt .n{font-family:var(--display);font-weight:800;font-size:30px;line-height:1;color:var(--c)}
+.pt p{color:var(--ink-2);font-size:14.5px}
+.pt .quip{font-style:italic;color:var(--muted);font-size:13.5px}
+.c1{--c:var(--pink)}.c2{--c:var(--indigo)}.c3{--c:var(--teal)}.c4{--c:var(--marigold)}.c5{--c:var(--sky)}.c6{--c:var(--lime)}
+
+/* facts */
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.fact{border-radius:16px;padding:16px;display:grid;gap:6px;background:var(--bgc);color:var(--ink)}
+.fact b{font-family:var(--display);font-size:26px;font-weight:800;color:var(--fc)}
+.fact span{font-size:14px;color:var(--ink-2)}
+.f1{--bgc:var(--marigold-bg);--fc:var(--flat)}.f2{--bgc:var(--teal-bg);--fc:var(--teal)}.f3{--bgc:var(--pink-bg);--fc:var(--pink)}.f4{--bgc:var(--sky-bg);--fc:var(--sky)}.f5{--bgc:var(--indigo-bg);--fc:var(--indigo)}.f6{--bgc:var(--up-bg);--fc:var(--up)}
+
+/* campaigns */
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:14px}
+.camp{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:16px;display:grid;gap:10px;min-width:0;align-content:start}
+.camp table{font-size:13px}
+.camp th,.camp td{padding:7px 8px}
+.camp td:first-child{min-width:170px;max-width:260px}
+.tag{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:999px}
+.tag.win{background:var(--up-bg);color:var(--up)} .tag.lose{background:var(--down-bg);color:var(--down)} .tag.new{background:var(--sky-bg);color:var(--sky)} .tag.gone{background:var(--flat-bg);color:var(--flat)}
+
+/* ideas */
+.ideas{display:grid;gap:12px}
+.idea{display:grid;grid-template-columns:52px minmax(0,1fr);gap:14px;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:16px}
+.bulb{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:26px;background:var(--marigold-bg)}
+.idea h3{margin-bottom:4px}
+.idea p{color:var(--ink-2);font-size:14.5px}
+.meta-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.meta-row span{font-family:var(--mono);font-size:11.5px;padding:2px 8px;border-radius:6px;border:1px solid var(--line);color:var(--ink-2)}
+.meta-row .impact{border-color:transparent;background:var(--up-bg);color:var(--up)}
+
+/* questions */
+.qs{background:var(--indigo-bg);border-radius:16px;padding:20px 22px;display:grid;gap:10px}
+.qs ol{margin:0;padding-left:22px;display:grid;gap:8px;color:var(--ink)}
+.qs li::marker{font-family:var(--display);font-weight:800;color:var(--indigo)}
+.note{font-size:12.5px;color:var(--muted);display:grid;gap:4px}
+section{display:grid;gap:16px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="kicker">DeoDap · deodap.in · Growth huddle · Aug 2026 vs Sep 2026</div>
+    <h1>August threw a Rakhi party.<br><em>September tidied up.</em></h1>
+    <p>Sales, traffic and ad spend all stepped down after the Rakhi peak. But every rupee worked about as hard as before, and customers spent more per order. Here is the full comparison, what we noticed, and the moves to make before the festive season.</p>
+    <div class="score" id="score"></div>
+  </header>
+
+  <section>
+    <div>
+      <div class="kicker">The big table</div>
+      <h2>August vs September, side by side</h2>
+      <p class="lede">Sources: Shopify Analytics, the Meta Ads MCP (DeoDap account), Windsor.ai (Dabster Meta account, Google Ads, GA4, Search Console). Meta counts only this store's accounts, DeoDap and Dabster. A green pill means the change is good news, even when the number went down.</p>
+    </div>
+    <div class="table-card"><div class="table-wrap"><table id="cmp"></table></div></div>
+  </section>
+
+  <section>
+    <div>
+      <div class="kicker">Meeting points</div>
+      <h2>Twelve things we noticed</h2>
+    </div>
+    <div class="points" id="points"></div>
+  </section>
+
+  <section>
+    <div>
+      <div class="kicker">Did you know?</div>
+      <h2>Fun facts from the numbers</h2>
+    </div>
+    <div class="facts" id="facts"></div>
+  </section>
+
+  <section>
+    <div>
+      <div class="kicker">Under the hood</div>
+      <h2>Which campaigns moved the needle</h2>
+      <p class="lede">Campaigns that spent more than ₹1 L in either month (Meta, DeoDap main account) or ₹50K (Google). ROAS is platform-reported: attributed purchase value ÷ spend.</p>
+    </div>
+    <div class="two">
+      <div class="camp"><h3>Meta · DeoDap account</h3><div class="table-wrap"><table id="metaCamp"></table></div></div>
+      <div class="camp"><h3>Google Ads · Web + App</h3><div class="table-wrap"><table id="gCamp"></table></div></div>
+    </div>
+  </section>
+
+  <section>
+    <div>
+      <div class="kicker">Bulb moments</div>
+      <h2>💡 Movement ideas for October</h2>
+      <p class="lede">Ordered by how much money each one is likely to move. Every idea is backed by a number on this page.</p>
+    </div>
+    <div class="ideas" id="ideas"></div>
+  </section>
+
+  <section class="qs">
+    <div class="kicker" style="color:var(--indigo)">Take to the table</div>
+    <h2>Questions for the room</h2>
+    <ol id="qs"></ol>
+  </section>
+
+  <div class="note">
+    <span>Shopify months are in IST. Net sales = gross − discounts − returns. Meta spend counts only the DeoDap account (Meta Ads MCP) and the Dabster account (Windsor.ai). Oblivion, DIPL, Grabnix, Natation, Dropshipping and Franchise advertise other stores and are excluded.</span>
+    <span>Platform ROAS relies on each platform's own attribution and double-counts across platforms. MER (Shopify net sales ÷ all ad spend) is the neutral scorecard.</span>
+    <span>Google App "conversions" include installs and app events, so they are not orders. Pulled 30 Sep 2026.</span>
+  </div>
+</div>
+
+<script>
+(function(){
+const L = v => '₹'+(v/1e5).toLocaleString('en-IN',{maximumFractionDigits:1,minimumFractionDigits:1})+' L';
+const CR = v => '₹'+(v/1e7).toFixed(2)+' Cr';
+const N = v => Math.round(v).toLocaleString('en-IN');
+const NS = v => v>=1e7?(v/1e7).toFixed(2)+' Cr':v>=1e5?(v/1e5).toFixed(1)+' L':N(v);
+const P = (v,d=2) => v.toFixed(d)+'%';
+const R = v => '₹'+v.toFixed(2);
+const RI = v => '₹'+Math.round(v).toLocaleString('en-IN');
+const X = v => v.toFixed(2)+'×';
+
+// [label, aug, sep, formatter, goodWhenUp (true/false/null=neutral), source, verdict]
+const rows = [
+ ['g-shop','Shopify sales'],
+ ['Orders',170354,113065,N,true,'Shopify','Down a third. The Rakhi rush is over'],
+ ['Gross sales',71521454.18,53709599.02,CR,true,'Shopify',''],
+ ['Discounts',1465552.53,1033521.1,L,false,'Shopify','Discounting was already light; 1.9% of gross'],
+ ['Returns',4398845.91,2997484.46,L,false,'Shopify','Fewer in rupees, still 5.6% of gross'],
+ ['Net sales',65657055.74,49678593.46,CR,true,'Shopify','Still +18% vs Sep 2025'],
+ ['Total sales (incl. ship + tax)',80058332.41,60689563.69,CR,true,'Shopify',''],
+ ['Shipping collected',4939620,3148678,L,null,'Shopify','Fewer orders paying for shipping'],
+ ['Avg order value',411.24,465.89,RI,true,'Shopify','Customers bought bigger baskets'],
+ ['Net sales per order',65657055.74/170354,49678593.46/113065,RI,true,'Shopify',''],
+ ['Returns % of gross',4398845.91/71521454.18*100,2997484.46/53709599.02*100,P,false,'Shopify','Improving, but 3× last October'],
+ ['YoY growth, net sales',61.0,18.3,v=>'+'+v.toFixed(1)+'%',true,'Shopify','Growth slowed sharply'],
+ ['g-traffic','Traffic & conversion'],
+ ['Sessions',9653108,6769558,NS,true,'Shopify',''],
+ ['Unique visitors',6091090,4490251,NS,true,'Shopify',''],
+ ['Add-to-cart rate',1117505/9653108*100,737019/6769558*100,P,true,'Shopify','Fewer shoppers reaching for the cart'],
+ ['Orders ÷ sessions',170354/9653108*100,113065/6769558*100,P,true,'Shopify','Small dip in conversion'],
+ ['New customers',94150,57410,N,true,'Shopify','Biggest drop on the page'],
+ ['Returning customers',60258,44621,N,true,'Shopify',''],
+ ['Returning share of buyers',60258/154408*100,44621/102031*100,v=>P(v,1),true,'Shopify','Loyal buyers held up better'],
+ ['Organic search clicks',584440,277851,NS,true,'Search Console','Halved. Needs a look'],
+ ['Organic search impressions',12103707,6670001,NS,true,'Search Console',''],
+ ['Search CTR',4.83,4.17,P,true,'Search Console',''],
+ ['Avg search position',8.64,8.45,v=>v.toFixed(2),false,'Search Console','Ranking slightly better'],
+ ['g-meta','Meta ads'],
+ ['Spend · DeoDap account',8929501.5,5757520.86,L,null,'Meta MCP','Cut by a third'],
+ ['Impressions',169037004,102300003,NS,null,'Meta MCP',''],
+ ['Reach (Meta Accounts)',37992269,31681495,NS,true,'Meta MCP','Reach fell much less than spend'],
+ ['Frequency',4.449,3.229,v=>v.toFixed(2),false,'Meta MCP','Less ad fatigue'],
+ ['CPM',52.83,56.28,R,false,'Meta MCP','Auctions got a bit pricier'],
+ ['CTR (all)',6.83,6.72,P,true,'Meta MCP','Creative still pulling clicks'],
+ ['CPC (all)',0.77,0.84,R,false,'Meta MCP',''],
+ ['Link clicks',10809073,6562168,NS,true,'Meta MCP',''],
+ ['Purchases',82061,49693,N,true,'Meta MCP',''],
+ ['Cost per purchase',108.82,115.86,R,false,'Meta MCP','₹7 more per order'],
+ ['Purchase ROAS',3.944,4.290,X,true,'Meta MCP','Better return per rupee'],
+ ['Spend · Dabster account',0,252753.12,L,null,'Windsor','New in Sep: 2,209 purchases at 3.86× ROAS'],
+ ['Meta spend · DeoDap + Dabster',8929501.5,6010273.98,L,null,'Meta MCP + Windsor','Store total, down 33%'],
+ ['g-google','Google ads'],
+ ['Spend · Website account',1879180.28,1621635.81,L,null,'Windsor',''],
+ ['Conv. value · Website',8524654.31,5996991.56,L,true,'Windsor',''],
+ ['ROAS · Website',8524654.31/1879180.28,5996991.56/1621635.81,X,true,'Windsor','Website ROAS slipped'],
+ ['Spend · App account',1451721.5,1498309.81,L,null,'Windsor','Only line where spend went up'],
+ ['Conv. value · App',11735741.23,8058692.5,L,true,'Windsor',''],
+ ['ROAS · App',11735741.23/1451721.5,8058692.5/1498309.81,X,true,'Windsor','Paid more, got less'],
+ ['g-ga','Blended scorecard'],
+ ['Total ad spend (Meta + Google)',12260403.28,9130219.6,L,null,'All',''],
+ ['MER (net sales ÷ ad spend)',65657055.74/12260403.28,49678593.46/9130219.6,X,true,'All','Held steady, slightly better'],
+ ['Ad spend % of net sales',12260403.28/65657055.74*100,9130219.6/49678593.46*100,v=>P(v,1),false,'All',''],
+ ['Google share of ad spend',(1879180.28+1451721.5)/12260403.28*100,(1621635.81+1498309.81)/9130219.6*100,v=>P(v,1),null,'All','Mix tilted toward Google'],
+ ['Ad cost per new customer',12260403.28/94150,9130219.6/57410,RI,false,'All','₹159, up from ₹130'],
+ ['GA4 Paid Social sessions',3257706,1793501,NS,null,'GA4',''],
+ ['GA4 Paid Social revenue',1300421.64,1908438.97,L,true,'GA4','Fewer visits, more money'],
+ ['GA4 Organic Social sessions',361824,66438,NS,true,'GA4','Down 82%'],
+ ['GA4 Organic Social revenue',2790069.84,188374.4,L,true,'GA4','Down 93%'],
+ ['GA4 Direct sessions',974506,1029827,NS,true,'GA4','Only channel that grew'],
+ ['GA4 Email sessions',42752,18282,NS,true,'GA4','']
+];
+let html = '<thead><tr><th>Metric</th><th>August</th><th>September</th><th>Change</th><th style="text-align:left">What it means</th></tr></thead><tbody>';
+rows.forEach(r=>{
+  if(r.length===2){ html += `<tr class="group ${r[0]}"><td colspan="5"><span>${r[1]}</span></td></tr>`; return; }
+  const [lab,a,s,f,good,src,v] = r;
+  const ch = a? s/a-1 : NaN;
+  let cls = 'flat';
+  if(Math.abs(ch)>=0.02){ cls = good===null?'flat':((ch>0)===good?'up':'down'); }
+  html += `<tr><td>${lab}<span class="src">${src}</span></td><td>${a?f(a):'–'}</td><td>${f(s)}</td><td><span class="chg ${isNaN(ch)?'flat':cls}">${isNaN(ch)?'New':(ch>0?'▲':'▼')+' '+Math.abs(ch*100).toFixed(1)+'%'}</span></td><td class="verdict">${v}</td></tr>`;
+});
+document.getElementById('cmp').innerHTML = html+'</tbody>';
+
+document.getElementById('score').innerHTML = [
+  ['₹4.97 Cr','Net sales in Sep','▼ 24% vs Aug · ▲ 18% YoY'],
+  ['1.13 L','Orders in Sep','▼ 34% vs Aug'],
+  ['₹466','Avg order value','▲ 13% vs Aug'],
+  ['5.44×','MER, net sales ÷ ad spend','Aug was 5.36×'],
+  ['₹91.3 L','Total ad spend','▼ 26% vs Aug']
+].map(s=>`<div><b class="num">${s[0]}</b><span>${s[1]}</span><small>${s[2]}</small></div>`).join('');
+
+const points = [
+ ['c1','The Rakhi hangover is real','Net sales fell 24% and orders fell 34% from August to September. That is the post-Rakhi dip, not a collapse. September is still 18% above September 2025.','August had a party. September is doing the dishes.'],
+ ['c2','Growth is slowing fast','Year-on-year growth dropped from +61% in August to +18% in September. That is the slowest since June (−6%), so the festive season has to do the heavy lifting.',''],
+ ['c3','Bigger baskets','AOV rose from ₹411 to ₹466 (+13%). Fewer people bought, but they bought more each time. Net sales per order rose from ₹385 to ₹439.','Quality over quantity, like a good thali.'],
+ ['c4','Efficiency held','We cut total ad spend 26% and net sales fell 24%, so MER edged up from 5.36× to 5.44×. Every rupee on ads still brought back about ₹5.40 of net sales.',''],
+ ['c5','Meta got leaner and smarter','On the main DeoDap account spend fell 36% but reach only fell 17%. Frequency dropped from 4.4 to 3.2 and purchase ROAS improved from 3.94× to 4.29×. Meta’s anomaly check found no fatigue or audience-overlap issues.','Fewer repeats of the same ad. Your audience thanks you.'],
+ ['c6','Cost per order crept up','Meta CPM rose 6.5% (₹52.8 to ₹56.3) and cost per purchase rose from ₹109 to ₹116. Pre-festive auctions are warming up, and they will get more expensive in October.',''],
+ ['c1','New customers fell the most','New buyers dropped 39% (94K to 57K) while returning buyers dropped only 26%. Ad cost per new customer rose from ₹130 to ₹159.',''],
+ ['c2','Google App spent more for less','The Google App account was the only line where spend went up (+3%). Its conversion value fell 31% and ROAS dropped from 8.1× to 5.4×. The "App return gift" campaign counts ₹1 per install as value, which inflates its ROAS.',''],
+ ['c3','Organic search clicks halved','Search Console clicks fell 52% (5.8 L to 2.8 L) even though average position improved slightly. Impressions fell 45% and CTR fell too. Rakhi and gifting searches have ended, and nothing has replaced them yet.','Google still likes us. People just stopped searching for rakhi.'],
+ ['c4','Organic social fell away','GA4 organic social sessions fell 82% and its revenue fell 93% (₹27.9 L to ₹1.9 L). Rakhi content carried August, and September had nothing to follow it.',''],
+ ['c5','A top Meta campaign disappeared','"NN · RIQ Carousel ASC+ Testing" spent ₹13.4 L in August for 12,960 purchases at 4.6× ROAS. It spent almost nothing in September. That alone explains about 40% of Meta\'s purchase drop.',''],
+ ['c6','Returns are still heavy','Returns fell from ₹44 L to ₹30 L, but they are still 5.6% of gross sales. Last October they were 1.9%. That is ₹30 L a month walking back to the warehouse.','Some products come back more often than NRI cousins at Diwali.']
+];
+document.getElementById('points').innerHTML = points.map((p,i)=>`<div class="pt ${p[0]}"><span class="n">${String(i+1).padStart(2,'0')}</span><h3>${p[1]}</h3><p>${p[2]}</p>${p[3]?`<p class="quip">${p[3]}</p>`:''}</div>`).join('');
+
+const facts = [
+ ['f1','Every 16 sec','In August DeoDap sold an order every 15.7 seconds, day and night. In September it was every 22.9 seconds.'],
+ ['f2','3.17 Cr','Meta Accounts reached by the DeoDap account in September. That is roughly the population of Kerala.'],
+ ['f3','₹0.84','What one Meta click cost in September. Cheaper than a cutting chai.'],
+ ['f4','1.02 Cr','Times our Meta ads appeared on screens in September, down from 1.69 Cr in August.'],
+ ['f5','91%','Share of Shopify sessions on a mobile phone this year. Every creative is a phone creative.'],
+ ['f6','₹11.84','What the "3038 NN Carousel Sales" campaign returned for every ₹1 spent in September, the best in the account. Its budget was halved anyway.']
+];
+document.getElementById('facts').innerHTML = facts.map(f=>`<div class="fact ${f[0]}"><b class="num">${f[1]}</b><span>${f[2]}</span></div>`).join('');
+
+// campaigns: [name, augSpend, augValue, sepSpend, sepValue, tag]
+const metaC = [
+ ['2015 | HP | Carousel | Sales | Pincodes',2009882.26,6033441,1660910.86,5260572.78,''],
+ ['NN · RIQ Carousel ASC+ Testing',1343185.22,6126664.97,0,0,'gone'],
+ ['3038 | NN | Carousel | Sales',650234.36,5580988.32,333946.15,3952382.06,'win'],
+ ['3033 | NN | Carousel | Traffic | Pincodes',508850.34,471818.29,287026.93,501575.9,'lose'],
+ ['2026 | HP | Video | Sales',151922.08,973166.38,245428.7,1488884.51,'win'],
+ ['6034 | KM | Video | Traffic | Pincodes',0,0,201850.37,25035.65,'lose'],
+ ['6025 | KM | Video | Traffic | HTL',273618.4,317337.2,103844.3,60309.73,'lose'],
+ ['2015 | HP | Carousel | Testing',0,0,189493.02,1178043.37,'new'],
+ ['6031 | KM | Carousel | Sales',0,0,164037.99,941515.67,'new'],
+ ['6047 | KM | Carousel | Sales | By AI',0,0,110405.92,890262.44,'new'],
+ ['2023 | HP | Video | Sales',0,0,110704.14,823410.77,'new'],
+ ['3140 | NN | Carousel | Sales',199478.4,1183340.7,0,0,'gone']
+];
+const gC = [
+ ['[Google Build] Purchase (App)',362367.89,4462929.39,230571.37,2464680.6,''],
+ ['2009 | NN | Shopping | All Products',225203.61,1067081.84,280499.73,1135981.18,''],
+ ['Shopping KA (Shubham bhai)',262887.1,1617820.93,217009.92,996559.99,'lose'],
+ ['App-Profitable',266824.6,1928869.35,243174.77,1213846.91,'lose'],
+ ['Kitchen PMax (App)',246706.45,2174808.76,214222.38,1257640.09,'lose'],
+ ['Bhavik Shopping (App)',131985.76,1194322.26,218345.05,1018942.32,'lose'],
+ ['1into2 High Margin',53966.1,287258.29,141201.75,525165.97,''],
+ ['Toys & Games PMax (App)',12161.37,52344.02,112816.74,377977.24,'new'],
+ ['Shopping KA',18677.86,81492.84,103400.18,423964.43,'new'],
+ ['Top Sellers Standard Shopping',59271.41,390465.04,4628.8,35731.19,'gone'],
+ ['Home Decor PMax (App)',394.39,2806.3,84132.02,393285.12,'new']
+];
+const tagTxt = {win:'Winner',lose:'Leaky',new:'New',gone:'Paused'};
+function campTable(id, list){
+  const roas=(v,s)=>s>0?(v/s).toFixed(2)+'×':'–';
+  document.getElementById(id).innerHTML = '<thead><tr><th>Campaign</th><th>Aug spend</th><th>Aug ROAS</th><th>Sep spend</th><th>Sep ROAS</th></tr></thead><tbody>'+
+    list.map(c=>`<tr><td>${c[0]} ${c[5]?`<span class="tag ${c[5]}">${tagTxt[c[5]]}</span>`:''}</td><td>${c[1]?L(c[1]):'–'}</td><td>${roas(c[2],c[1])}</td><td>${c[3]?L(c[3]):'–'}</td><td>${roas(c[4],c[3])}</td></tr>`).join('')+'</tbody>';
+}
+campTable('metaCamp',metaC); campTable('gCamp',gC);
+
+const ideas = [
+ ['Bring back the RIQ ASC+ carousel campaign','It delivered 12,960 purchases at 4.6× ROAS in August, then went quiet in September. Restart it with Diwali creatives before auctions get expensive.','Meta team','₹50–60 L of attributed sales a month'],
+ ['Put the halved winner back on full budget','"3038 NN Carousel Sales" returned 11.8× in September on ₹3.3 L, half its August budget. Scale it by 20% every 3 days while ROAS stays above 6×.','Meta team','High ROAS, low risk'],
+ ['Stop the traffic campaigns that do not sell','6034 and 6025 KM traffic campaigns spent ₹3.1 L in September for about ₹85K of purchases (0.1–0.6× ROAS). Move that money into sales campaigns, or keep a small budget for retargeting audiences only.','Meta team','Save ₹3 L a month'],
+ ['Make "By AI" creatives a lane of their own','The new "6047 KM Carousel By AI" campaign reached 8.1× ROAS in its first month. Brief 10 more AI-made carousels for the Diwali catalogue and A/B test them against studio shoots.','Creative team','Cheaper creative, higher ROAS'],
+ ['Revive Top Sellers Standard Shopping on Google','It ran at 6.6× ROAS in August on ₹59K, then was almost paused in September (₹4.6K). Turn it back on with Diwali best-sellers.','Google team','Quick win'],
+ ['Fix the value tracking on Google app promotion campaigns','"App return gift" and "Monsoon" campaigns count each install as ₹1 of value, which makes Google App ROAS look better than it is. Set real purchase values, or leave these campaigns out of the ROAS scorecard.','Google + analytics','Truthful numbers'],
+ ['Build Diwali and Navratri landing pages now','Organic clicks halved when gifting searches ended. Publish gift-guide collections (under ₹199, under ₹499, corporate gifting, puja essentials) so they are indexed before searches peak in October.','SEO + web','Win back 2–3 L clicks a month'],
+ ['Restart the organic social calendar','Organic social revenue fell from ₹27.9 L to ₹1.9 L. Run 3 reels a week plus 5 micro-creators on Diwali decor and kitchen gadgets. Put UTM links on every post.','Social team','Low cost, high reach'],
+ ['Lean into bigger baskets','AOV is ₹466 and rising. Test a free-shipping threshold at ₹499, "buy 2 get 1" on the 1into2 range, and a cart upsell of our top sellers under ₹99.','Growth + CRO','+₹20–30 per order'],
+ ['Attack returns before the festive rush','Returns are 5.6% of gross, 3× last October. List the 20 most-returned SKUs, fix their photos and size or spec info, and confirm COD orders over WhatsApp before dispatch.','Ops + catalogue','₹10–15 L saved a month'],
+ ['Win back past buyers cheaply','Returning buyers held up better (44% of buyers in September), but email sessions fell 57%. Send a Diwali early-access drop on WhatsApp and email to everyone who bought in Rakhi week.','CRM','Cheapest orders we can get']
+];
+document.getElementById('ideas').innerHTML = ideas.map(i=>`<div class="idea"><div class="bulb" aria-hidden="true">💡</div><div><h3>${i[0]}</h3><p>${i[1]}</p><div class="meta-row"><span>Owner: ${i[2]}</span><span class="impact">${i[3]}</span></div></div></div>`).join('');
+
+document.getElementById('qs').innerHTML = [
+ 'Why was the RIQ ASC+ campaign switched off in September? Was it a budget call, or did something break?',
+ 'What is our Diwali target: October net sales above ₹6.6 Cr (August\'s peak)? And what MER will we accept to get there?',
+ 'Who owns returns? Can we have the top-20 returned SKU list by next week?',
+ 'Should Google App keep growing its spend while its ROAS is falling?',
+ 'Can the SEO team have Diwali gift pages live within 7 days?',
+ 'Which traffic campaigns are really top-of-funnel bets, and how do we measure them if not by ROAS?'
+].map(q=>`<li>${q}</li>`).join('');
+})();
+</script>

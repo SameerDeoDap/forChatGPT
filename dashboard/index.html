@@ -109,7 +109,7 @@ footer{color:var(--muted);font-size:12px}
     <h1>DeoDap Shopify performance, Oct 2025 to Sep 2026</h1>
     <p class="sub">Twelve full months of Shopify sales compared month by month and against the same month a year earlier, read alongside store traffic, Meta and Google ad spend, Google Analytics channels, Search Console and GoKwik checkout data.</p>
     <div class="sources">
-      <span class="chip">Shopify Analytics</span><span class="chip">Meta Ads · 8 accounts</span><span class="chip">Google Ads · Web + App</span><span class="chip">GA4 · deodap.in</span><span class="chip">Search Console</span><span class="chip">GoKwik checkout</span>
+      <span class="chip">Shopify Analytics</span><span class="chip">Meta Ads · DeoDap + Dabster</span><span class="chip">Google Ads · Web + App</span><span class="chip">GA4 · deodap.in</span><span class="chip">Search Console</span><span class="chip">GoKwik checkout</span>
     </div>
   </header>
 
@@ -203,16 +203,13 @@ footer{color:var(--muted);font-size:12px}
     <div class="sec-head">
       <div class="eyebrow">03 · Advertising</div>
       <h2>Ad spend and what it returned</h2>
-      <p class="sub">Meta spend covers every connected ad account unless you switch to DeoDap accounts only. MER (marketing efficiency ratio) is Shopify net sales ÷ total ad spend; it does not depend on platform attribution.</p>
+      <p class="sub">Meta spend counts only this store's ad accounts, DeoDap and Dabster. The other connected Meta accounts advertise other stores and are left out of every total. MER (marketing efficiency ratio) is Shopify net sales ÷ total ad spend, so it does not depend on platform attribution.</p>
     </div>
     <div class="grid">
       <div class="panel">
         <div class="panel-head">
           <h3>Monthly ad spend by platform</h3>
-          <div class="seg" role="group" aria-label="Meta accounts included">
-            <button type="button" id="acc-all" aria-pressed="true" data-a="all">All Meta accounts</button>
-            <button type="button" id="acc-dd" aria-pressed="false" data-a="dd">DeoDap accounts only</button>
-          </div>
+          <span class="cap">Meta = DeoDap + Dabster accounts</span>
         </div>
         <div class="legend"><span><i style="background:var(--s1)"></i>Meta</span><span><i style="background:var(--s2)"></i>Google Web</span><span><i style="background:var(--s3)"></i>Google App</span></div>
         <div class="chart"><canvas id="spendChart"></canvas></div>
@@ -228,7 +225,7 @@ footer{color:var(--muted);font-size:12px}
         <div class="chart"><canvas id="roasChart"></canvas></div>
       </div>
       <div class="panel">
-        <div class="panel-head"><h3>Meta ad accounts, 12 months</h3><span class="cap">Spend, pixel purchases and attributed value</span></div>
+        <div class="panel-head"><h3>Meta ad accounts, 12 months</h3><span class="cap">Only DeoDap and Dabster count toward this store. Other stores' accounts are shown for reference.</span></div>
         <div class="table-wrap"><table id="metaTable"></table></div>
       </div>
     </div>
@@ -286,7 +283,7 @@ footer{color:var(--muted);font-size:12px}
     <ul>
       <li>Shopify figures are in IST, for complete months from 1 Oct 2025 to 30 Sep 2026. Last year means Oct 2024 to Sep 2025.</li>
       <li>Net sales = gross sales − discounts − returns. Total sales adds shipping and taxes.</li>
-      <li>Meta includes 8 connected accounts. Grabnix, Oblivion, Natation and Dabster may sell through other storefronts, so MER is shown both ways. "DeoDap accounts" means DeoDap and DeoDap (DIPL) A/c.</li>
+      <li>Meta spend counts only the DeoDap and Dabster ad accounts. Oblivion, DeoDap (DIPL) A/c, DeoDap Dropshipping, DeoDap Franchise, Grabnix and Natation advertise other stores and are excluded from all totals, MER and cost per customer.</li>
       <li>Platform ROAS relies on each platform's own attribution and double-counts across platforms. MER is the more reliable efficiency number.</li>
       <li>Google App conversions count app events (installs and in-app actions), so they are far higher than orders.</li>
       <li>₹86.3 Cr of net sales has no product title in Shopify (custom, bundled or deleted line items), so the product list covers named products only.</li>
@@ -314,8 +311,8 @@ const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).
 
 // ---------- derived series ----------
 const metaSpend = (filter) => MKEYS.map(k => sum(Object.entries(D.meta[k]).filter(([a])=>filter(a)).map(([,v])=>v[0])));
-const isDD = a => a==="DeoDap" || a==="DeoDap (DIPL) A/c";
-const metaAll = metaSpend(()=>true), metaDD = metaSpend(isDD);
+const isDD = a => a==="DeoDap" || a.startsWith("DABSTER");
+const metaAll = metaSpend(isDD), metaDD = metaAll;
 const gWeb = D.google.web.map(r=>r[0]), gApp = D.google.app.map(r=>r[0]);
 const adAll = metaAll.map((m,i)=>m+gWeb[i]+gApp[i]);
 const adDD = metaDD.map((m,i)=>m+gWeb[i]+gApp[i]);
@@ -336,7 +333,7 @@ const kpis = [
   ['Avg order value', inr((sum(S.gross)-sum(S.discounts))/ordY), 'Net sales per order '+inr(netY/ordY)+' vs '+inr(netPY/ordPY)+' last year'],
   ['Store sessions', cntShort(sessY), pct(ordY/sessY,2)+' orders per session'],
   ['Total ad spend', cr(adY), pct(adY/netY)+' of net sales · Meta '+pct(sum(metaAll)/adY,0)],
-  ['MER', (netY/adY).toFixed(2)+'×', 'Net sales ÷ ad spend · '+(netY/adDDY).toFixed(2)+'× with DeoDap Meta only'],
+  ['MER', (netY/adY).toFixed(2)+'×', 'Net sales ÷ ad spend (Meta + Google)'],
   ['Customers', cntShort(newC)+' new', cntShort(retC)+' returning · '+pct(retC/(newC+retC),0)+' of buyers']
 ];
 document.getElementById('kpis').innerHTML = kpis.map(([l,v,n])=>`<div class="kpi"><div class="label">${l}</div><div class="value num">${v}</div><div class="note">${n}</div></div>`).join('');
@@ -350,10 +347,10 @@ const find = [
   `<b>Growth was strongest from October to April, at +47% to +68% YoY every month.</b> May to July were almost flat against last year's strong summer (+7%, −6%, +3%). August came back at +61%, and September grew +18%.`,
   `<b>${MLAB[best]} was the best month at ${cr(S.net[best])} net and ${cntShort(S.orders[best])} orders.</b> September then fell ${pct(-momNet[11],0)} month-over-month to ${cr(S.net[11])}. Watch this closely going into the festive quarter.`,
   `<b>Returns are rising.</b> Returns went from ${pct(retEarly)} of gross sales in Oct–Dec to ${pct(retLate)} in Jul–Sep, reaching ₹44 L in August. Discounts moved the other way: ${pct(discQ1)} of gross in Oct '25, under 2% since July.`,
-  `<b>Ad spend was ${cr(adY)} for the year, ${pct(adY/netY)} of net sales, for a blended MER of ${(netY/adY).toFixed(2)}×.</b> The best months were Oct (6.7×) and Jun (5.7×). The weakest were Jan–Feb (4.2×), when Meta spend peaked at over ₹1.1 Cr a month. Google App spend grew almost 7× from ₹2.2 L to ₹15 L a month, and its platform ROAS fell from 16× to 5×.`,
+  `<b>Ad spend was ${cr(adY)} for the year, ${pct(adY/netY)} of net sales, for a blended MER of ${(netY/adY).toFixed(2)}×.</b> MER was best in Oct (10.8×) and Nov (8.0×) while spend was still low. It settled at 5.4× in Feb, Aug and Sep, as Meta spend grew from ₹21 L to ₹89 L a month. Google App spend grew almost 7× from ₹2.2 L to ₹15 L a month, and its platform ROAS fell from 16× to 5×.`,
   `<b>Traffic peaked in August at 96.5 L sessions, but conversion peaked earlier, at 2.8% in June.</b> Conversion then slid to 1.7% by September, while add-to-cart rate dropped from 18% in April to 11%. More traffic is arriving but less of it is buying intent.`,
   `<b>Organic search is weakening.</b> Search Console clicks fell from 7.8 L in June to 2.8 L in September, even though average position improved from 10.7 to 8.5. Impressions nearly doubled in Jun–Aug while CTR fell from 11% to 4%. Check titles and snippets, and any SERP feature changes.`,
-  `<b>Almost all orders (99.6%) complete through GoKwik checkouts.</b> The Appbrew mobile app alone drives ₹40.8 Cr (65%) of net sales. Returning customers rose from 42% to 46% of buyers, and the ad cost per new customer rose to ₹184 in September.`
+  `<b>Almost all orders (99.6%) complete through GoKwik checkouts.</b> The Appbrew mobile app alone drives ₹40.8 Cr (65%) of net sales. Returning customers rose from 42% to 46% of buyers, and the ad cost per new customer rose from ₹87 in Oct '25 to ₹159 in September.`
 ];
 document.getElementById('findings').innerHTML = find.map(f=>`<li>${f}</li>`).join('');
 
@@ -367,11 +364,12 @@ document.getElementById('findings').innerHTML = find.map(f=>`<li>${f}</li>`).joi
 (function metaTable(){
   const acc = {};
   MKEYS.forEach(k=>Object.entries(D.meta[k]).forEach(([a,v])=>{acc[a]=acc[a]||[0,0,0];acc[a][0]+=v[0];acc[a][1]+=v[1];acc[a][2]+=v[2]}));
-  const rows = Object.entries(acc).sort((a,b)=>b[1][0]-a[1][0]);
-  const tot = rows.reduce((t,[,v])=>[t[0]+v[0],t[1]+v[1],t[2]+v[2]],[0,0,0]);
+  const all = Object.entries(acc).sort((a,b)=>b[1][0]-a[1][0]);
+  const rows = all.filter(([a])=>isDD(a)).concat(all.filter(([a])=>!isDD(a)));
+  const tot = rows.filter(([a])=>isDD(a)).reduce((t,[,v])=>[t[0]+v[0],t[1]+v[1],t[2]+v[2]],[0,0,0]);
   document.getElementById('metaTable').innerHTML = `<thead><tr><th>Account</th><th>Spend ₹L</th><th>Share</th><th>Purchases</th><th>Attributed value ₹L</th><th>ROAS</th><th>Cost / purchase ₹</th></tr></thead><tbody>`+
-    rows.map(([a,v])=>`<tr><td>${a}${isDD(a)?' <span class="chip" style="padding:0 5px">DeoDap</span>':''}</td><td>${lakh(v[0])}</td><td>${pct(v[0]/tot[0])}</td><td>${v[2]?cnt(v[2]):'–'}</td><td>${v[1]?lakh(v[1]):'–'}</td><td>${v[1]?(v[1]/v[0]).toFixed(2)+'×':'not tracked'}</td><td>${v[2]?cnt(v[0]/v[2]):'–'}</td></tr>`).join('')+
-    `</tbody><tfoot><tr><td>All accounts</td><td>${lakh(tot[0])}</td><td>100%</td><td>${cnt(tot[2])}</td><td>${lakh(tot[1])}</td><td>${(tot[1]/tot[0]).toFixed(2)}×</td><td>${cnt(tot[0]/tot[2])}</td></tr></tfoot>`;
+    rows.map(([a,v])=>`<tr style="${isDD(a)?'':'opacity:.55'}"><td>${a} <span class="chip" style="padding:0 5px">${isDD(a)?'This store':'Other store'}</span></td><td>${lakh(v[0])}</td><td>${isDD(a)?pct(v[0]/tot[0]):'excluded'}</td><td>${v[2]?cnt(v[2]):'–'}</td><td>${v[1]?lakh(v[1]):'–'}</td><td>${v[1]?(v[1]/v[0]).toFixed(2)+'×':'not tracked'}</td><td>${v[2]?cnt(v[0]/v[2]):'–'}</td></tr>`).join('')+
+    `</tbody><tfoot><tr><td>This store (DeoDap + Dabster)</td><td>${lakh(tot[0])}</td><td>100%</td><td>${cnt(tot[2])}</td><td>${lakh(tot[1])}</td><td>${(tot[1]/tot[0]).toFixed(2)}×</td><td>${cnt(tot[0]/tot[2])}</td></tr></tfoot>`;
 })();
 (function channelTable(){
   const t = S.channels, to = sum(t.map(r=>r[1])), tn = sum(t.map(r=>r[2]));
@@ -403,7 +401,7 @@ stat('custStats',[[inr(adY/newC),'Avg ad cost per new customer'],[pct(S.retCust[
 stat('gkStats',[[pct(D.gokwik.abandonRate/100,0),'Cart abandonment'],[cnt(D.gokwik.abandoned),'Abandoned carts'],[cr(D.gokwik.abandonedValue),'Abandoned cart value'],[pct(D.gokwik.paySuccess/100,0),'Payment success rate']]);
 function adStats(dd){
   const ad = dd?adDD:adAll, meta = dd?metaDD:metaAll;
-  stat('adStats',[[cr(sum(ad)),'Total ad spend'],[cr(sum(meta)),'Meta spend'],[cr(sum(gWeb)+sum(gApp)),'Google spend'],[(netY/sum(ad)).toFixed(2)+'×','MER, 12 months'],[pct(sum(ad)/netY),'Ad spend % of net sales']]);
+  stat('adStats',[[cr(sum(ad)),'Total ad spend'],[cr(sum(meta)),'Meta spend (DeoDap + Dabster)'],[cr(sum(gWeb)+sum(gApp)),'Google spend'],[(netY/sum(ad)).toFixed(2)+'×','MER, 12 months'],[pct(sum(ad)/netY),'Ad spend % of net sales']]);
 }
 
 // ---------- charts ----------
@@ -477,7 +475,7 @@ function build(){
   adStats(accMode==='dd');
   // MER
   const ad = accMode==='dd'?adDD:adAll;
-  mk('merChart',{data:{labels:MLAB,datasets:[lineDs('MER'+(accMode==='dd'?' (DeoDap Meta only)':' (all Meta accounts)'),S.net.map((n,i)=>n/ad[i]),T.s[0],{fill:{target:'origin'},backgroundColor:T.s[0]+'22',pointBackgroundColor:T.s[0]})]},options:base(T,fmtX)});
+  mk('merChart',{data:{labels:MLAB,datasets:[lineDs('MER',S.net.map((n,i)=>n/ad[i]),T.s[0],{fill:{target:'origin'},backgroundColor:T.s[0]+'22',pointBackgroundColor:T.s[0]})]},options:base(T,fmtX)});
   // ROAS
   const ddRoas = MKEYS.map(k=>{const v=D.meta[k]["DeoDap"];return v[1]/v[0]});
   mk('roasChart',{data:{labels:MLAB,datasets:[lineDs('Meta · DeoDap',ddRoas,T.s[0]),lineDs('Google Web',D.google.web.map(r=>r[1]/r[0]),T.s[1]),lineDs('Google App',D.google.app.map(r=>r[1]/r[0]),T.s[2])]},options:base(T,fmtX)});
@@ -496,7 +494,6 @@ function seg(sel, attr, set){
   }));
 }
 seg('[data-m]','m',v=>salesMetric=v);
-seg('[data-a]','a',v=>accMode=v);
 function start(){ if(window.Chart){ Chart.defaults.font.family="'IBM Plex Sans', system-ui, sans-serif"; build(); } }
 start();
 if(document.fonts) document.fonts.ready.then(()=>{ if(window.Chart) build(); });
